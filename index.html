@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="th" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ระบบประเมินหนี้อัจฉริยะ - ทนายธันย์แก้หนี้</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { font-family: 'Sarabun', sans-serif; }
+    .fade-in { animation: fadeIn 0.4s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .progress-fill { transition: width 0.5s ease-out; }
+    .input-focus:focus { transform: scale(1.01); transition: all 0.2s ease; }
+    .btn-primary {
+      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+      transition: all 0.2s ease;
+    }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4); }
+    .stage-badge { @apply px-3 py-1.5 rounded-full text-white text-sm font-medium shadow-lg; }
+  </style>
+</head>
+<body class="h-full bg-slate-50">
+  <div id="app" class="h-full overflow-auto">
+    
+    <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200 shadow-sm">
+      <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-lg">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+          </div>
+          <h1 class="text-lg font-bold text-slate-800">ทนายธันย์แก้หนี้</h1>
+        </div>
+        <div id="progress-container" class="text-right">
+          <p class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Progress</p>
+          <div class="w-24 h-1.5 bg-slate-200 rounded-full mt-1 overflow-hidden">
+            <div id="progress-bar" class="h-full bg-blue-600 progress-fill" style="width: 0%"></div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="max-w-xl mx-auto px-4 py-8">
+      
+      <div id="screen-welcome" class="fade-in text-center">
+        <div class="bg-white rounded-3xl p-8 shadow-xl border border-slate-100">
+          <span class="text-5xl">⚖️</span>
+          <h2 class="text-2xl font-bold mt-4 text-slate-900">เริ่มการประเมินหนี้</h2>
+          <p class="text-slate-500 mt-2 mb-8">ใช้เวลาเพียง 2 นาที เพื่อหาแนวทางปลดหนี้ที่ดีที่สุดสำหรับคุณ</p>
+          <button onclick="showScreen('form')" class="w-full btn-primary text-white py-4 rounded-2xl font-bold text-lg">
+            เริ่มกรอกข้อมูล →
+          </button>
+        </div>
+      </div>
+
+      <div id="screen-form" class="hidden fade-in space-y-6">
+        <div class="bg-white rounded-3xl p-6 shadow-xl border border-slate-100 space-y-6">
+          
+          <div class="space-y-4">
+            <h3 class="font-bold text-blue-600 flex items-center gap-2">👤 ข้อมูลพื้นฐาน</h3>
+            <input type="text" id="full_name" placeholder="ชื่อ-นามสกุล" class="w-full p-4 rounded-xl bg-slate-50 border-none focus:ring-2 focus:ring-blue-500 outline-none">
+            <input type="tel" id="contact_phone" placeholder="เบอร์โทรศัพท์ (เช่น 0812345678)" class="w-full p-4 rounded-xl bg-slate-50 border-none focus:ring-2 focus:ring-blue-500 outline-none">
+            <input type="text" id="contact_line" placeholder="LINE ID" class="w-full p-4 rounded-xl bg-slate-50 border-none focus:ring-2 focus:ring-blue-500 outline-none">
+          </div>
+
+          <hr class="border-slate-100">
+
+          <div class="space-y-4">
+            <h3 class="font-bold text-blue-600 flex items-center gap-2">💰 ข้อมูลภาระหนี้</h3>
+            <div>
+              <label class="text-sm text-slate-500 mb-2 block">จำนวนยอดหนี้รวมทั้งหมด (บาท)</label>
+              <input type="number" id="total_debt" placeholder="0.00" class="w-full p-5 rounded-2xl bg-blue-50 border-2 border-blue-100 text-2xl font-bold text-blue-700 focus:border-blue-500 outline-none">
+              <p class="text-[11px] text-slate-400 mt-2 italic">* กรอกเฉพาะตัวเลขเพื่อให้ระบบคำนวณได้แม่นยำ</p>
+            </div>
+            
+            <div>
+              <label class="text-sm text-slate-500 mb-2 block">ความสามารถในการผ่อน/เดือน</label>
+              <select id="max_payment_ability" class="w-full p-4 rounded-xl bg-slate-50 border-none outline-none">
+                <option value="0">ไม่สามารถผ่อนได้แล้ว</option>
+                <option value="1000-3000">1,000 - 3,000 บาท</option>
+                <option value="3000-7000">3,000 - 7,000 บาท</option>
+                <option value="7000+">7,000 บาทขึ้นไป</option>
+              </select>
+            </div>
+          </div>
+
+          <button onclick="submitData()" id="btn-submit" class="w-full btn-primary text-white py-4 rounded-2xl font-bold text-lg mt-4 shadow-lg">
+            ส่งข้อมูลให้ทนายประเมิน ✨
+          </button>
+        </div>
+      </div>
+
+      <div id="screen-success" class="hidden fade-in text-center">
+        <div class="bg-white rounded-3xl p-10 shadow-xl border border-slate-100">
+          <div class="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
+            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" /></svg>
+          </div>
+          <h2 class="text-2xl font-bold text-slate-900">ส่งข้อมูลสำเร็จ!</h2>
+          <p class="text-slate-500 mt-3 mb-8">ทนายได้รับข้อมูลแล้ว และจะติดต่อกลับทางช่องทางที่คุณระบุโดยเร็วที่สุด</p>
+          
+          <div class="bg-slate-50 rounded-2xl p-4 text-left space-y-2">
+            <p class="text-xs font-bold text-slate-400 uppercase">ประวัติการกรอกล่าสุด</p>
+            <div id="last-record" class="text-sm text-slate-700"></div>
+          </div>
+          
+          <button onclick="location.reload()" class="mt-8 text-blue-600 font-bold hover:underline">กรอกข้อมูลใหม่</button>
+        </div>
+      </div>
+
+    </main>
+
+    <div id="loading" class="hidden fixed inset-0 bg-white/80 backdrop-blur-md z-50 flex items-center justify-center">
+      <div class="text-center">
+        <div class="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+        <p class="font-bold text-slate-700 italic">ระบบกำลังส่งข้อมูลหาทนาย...</p>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // URL ที่คุณให้มา
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbzBUgUuazOFDYAoAecPSBTd8CxyPFsznBioE2emPxjh1ud1SbWtjbic3KlIHpRf--PnuA/exec';
+
+    function showScreen(id) {
+      document.querySelectorAll('[id^="screen-"]').forEach(el => el.classList.add('hidden'));
+      document.getElementById('screen-' + id).classList.remove('hidden');
+      document.getElementById('progress-bar').style.width = id === 'form' ? '50%' : (id === 'success' ? '100%' : '0%');
+    }
+
+    async function submitData() {
+      const btn = document.getElementById('btn-submit');
+      const name = document.getElementById('full_name').value;
+      const debt = document.getElementById('total_debt').value;
+
+      if (!name || !debt) {
+        alert('โปรดกรอกชื่อและยอดหนี้เพื่อความแม่นยำในการประเมิน');
+        return;
+      }
+
+      document.getElementById('loading').classList.remove('hidden');
+      btn.disabled = true;
+
+      const dataToSave = {
+        created_at: new Date().toLocaleString('th-TH'),
+        full_name: name,
+        contact_phone: document.getElementById('contact_phone').value,
+        contact_line: document.getElementById('contact_line').value,
+        total_debt: debt,
+        max_payment_ability: document.getElementById('max_payment_ability').value,
+        status: 'รอดำเนินการ'
+      };
+
+      try {
+        await fetch(scriptURL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(dataToSave)
+        });
+
+        // แสดงข้อมูล Real-time ในหน้าสำเร็จ
+        document.getElementById('last-record').innerHTML = `
+          <div class="flex justify-between"><span>คุณ: ${dataToSave.full_name}</span></div>
+          <div class="flex justify-between font-bold text-blue-600"><span>ยอดหนี้: ฿${Number(dataToSave.total_debt).toLocaleString()}</span></div>
+        `;
+
+        showScreen('success');
+      } catch (error) {
+        console.error('Error:', error);
+        alert('เกิดข้อผิดพลาดในการเชื่อมต่อระบบ');
+      } finally {
+        document.getElementById('loading').classList.add('hidden');
+      }
+    }
+  </script>
+</body>
+</html>
